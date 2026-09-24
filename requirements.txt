@@ -1,0 +1,6 @@
+Flask==3.0.3
+Pillow==11.3.0
+# Bundles a static ffmpeg binary inside the venv so video thumbnails work on
+# machines with no system ffmpeg. Optional: if it fails to install, the app
+# still runs and video tiles fall back to browser-rendered frames.
+imageio-ffmpeg==0.6.0

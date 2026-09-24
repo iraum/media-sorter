@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Media Sorter</title>
+  <link rel="icon" href="/static/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="/static/css/style.css">
+</head>
+<body data-start-dir="{{ start_dir }}"
+      data-has-ffmpeg="{{ 'true' if has_ffmpeg else 'false' }}"
+      data-roots="{{ roots | join(':') }}">
+
+<header class="topbar">
+  <div class="brand" title="Media Sorter">▦ Media Sorter</div>
+  <div class="toolbar">
+    <button type="button" id="btn-newfolder" title="New folder in the current pane (n)">+ New folder</button>
+    <button type="button" id="btn-undo" title="Undo the last move (z)">↶ Undo</button>
+    <button type="button" id="btn-split" title="Show a second folder next to this one (drag between them)">⫿ Split view</button>
+  </div>
+  <div class="toolbar right">
+    <label>Sort <select id="sort">
+      <option value="name">Name</option>
+      <option value="date">Date</option>
+      <option value="size">Size</option>
+    </select></label>
+    <label>Show <select id="filter">
+      <option value="all">All</option>
+      <option value="image">Images</option>
+      <option value="video">Videos</option>
+    </select></label>
+    <label title="Tile size ( [ and ] )">Size <input type="range" id="size" min="110" max="420" step="10"></label>
+    <button type="button" id="btn-help" title="Help (?)">?</button>
+  </div>
+</header>
+
+<div class="layout">
+  <aside class="sidebar">
+    <div class="side-head">Folders <small>drop here to move</small></div>
+    <ul id="tree" class="tree"></ul>
+  </aside>
+  <div id="panes" class="panes"></div>
+</div>
+
+<footer class="statusbar">
+  <span id="status-left"></span>
+  <span id="status-right"></span>
+</footer>
+
+<div id="lightbox" class="lightbox" hidden>
+  <div class="lb-stage" id="lb-stage"></div>
+  <div class="lb-caption" id="lb-caption"></div>
+  <button type="button" class="lb-btn lb-close" id="lb-close" title="Close (Esc)">×</button>
+  <button type="button" class="lb-btn lb-prev" id="lb-prev" title="Previous (←)">‹</button>
+  <button type="button" class="lb-btn lb-next" id="lb-next" title="Next (→)">›</button>
+</div>
+
+<div id="modal" class="modal" hidden>
+  <form id="modal-form" class="modal-box" autocomplete="off">
+    <h3>New folder</h3>
+    <p class="muted" id="modal-where"></p>
+    <input id="modal-input" type="text" placeholder="folder name" maxlength="200">
+    <div class="modal-actions">
+      <button type="button" id="modal-cancel">Cancel</button>
+      <button type="submit" class="primary">Create</button>
+    </div>
+  </form>
+</div>
+
+<div id="help" class="modal" hidden>
+  <div class="modal-box help-box">
+    <h3>How it works</h3>
+    <p>The tree on the left and the folder tiles in the grid show what's where — each
+      folder tile previews a few of the images inside it. Click a folder in the tree
+      or double-click a tile to open it. <b>Split view</b> puts a second folder next to
+      the first so you can move things between them.</p>
+    <p><b>Move by dragging.</b> Drag a file (or a folder) onto a folder tile, onto a
+      folder in the tree, onto a breadcrumb, or into the other pane's empty space.
+      Select several first to move them together. Nothing is ever deleted or
+      overwritten, and <b>Undo</b> puts the last move back.</p>
+    <table class="keys">
+      <tr><td>Click · <kbd>Ctrl</kbd>+click · <kbd>Shift</kbd>+click</td><td>Select · toggle · select a range</td></tr>
+      <tr><td>Double-click</td><td>Open a folder, or view a file full-size</td></tr>
+      <tr><td><kbd>Ctrl</kbd>+double-click a folder</td><td>Open it in the other pane</td></tr>
+      <tr><td><kbd>←</kbd> <kbd>→</kbd> <kbd>↑</kbd> <kbd>↓</kbd></td><td>Move the cursor &nbsp;·&nbsp; <kbd>Shift</kbd> extends the selection</td></tr>
+      <tr><td><kbd>Enter</kbd></td><td>Open the folder / view the file under the cursor (<kbd>Ctrl</kbd>: in the other pane)</td></tr>
+      <tr><td><kbd>Space</kbd></td><td>Toggle selection on the item under the cursor</td></tr>
+      <tr><td><kbd>Backspace</kbd></td><td>Go up one folder</td></tr>
+      <tr><td><kbd>Tab</kbd></td><td>Switch between panes</td></tr>
+      <tr><td><kbd>Ctrl</kbd>+<kbd>A</kbd> · <kbd>Esc</kbd></td><td>Select all · clear selection / close the viewer</td></tr>
+      <tr><td><kbd>z</kbd> or <kbd>Ctrl</kbd>+<kbd>Z</kbd></td><td>Undo the last move</td></tr>
+      <tr><td><kbd>n</kbd></td><td>New folder</td></tr>
+      <tr><td><kbd>[</kbd> <kbd>]</kbd></td><td>Smaller / larger tiles</td></tr>
+      <tr><td><kbd>r</kbd></td><td>Reload</td></tr>
+    </table>
+    <div class="modal-actions"><button type="button" id="help-close" class="primary">Close</button></div>
+  </div>
+</div>
+
+<div id="toast" class="toast" hidden></div>
+<div id="drag-ghost" class="drag-ghost" hidden></div>
+
+<script src="/static/js/app.js"></script>
+</body>
+</html>
