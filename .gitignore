@@ -1,0 +1,7 @@
+venv/
+__pycache__/
+*.pyc
+security.log
+moves.log
+media-sorter.log
+media-sorter.pid
